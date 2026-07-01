@@ -1,0 +1,46 @@
+name: Build Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org/
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          npm config set registry https://registry.npmjs.org/
+          if (Test-Path package-lock.json) { Remove-Item package-lock.json -Force }
+          if (Test-Path node_modules) { Remove-Item node_modules -Recurse -Force }
+          npm cache clean --force
+          npm install --package-lock=false --include=dev --no-audit --no-fund
+          node ./node_modules/typescript/bin/tsc --version
+          node ./node_modules/vite/bin/vite.js --version
+
+      - name: Check project
+        run: npm run check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Build Windows portable app
+        run: npm run dist:win
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FM-Remix-Forge-Studio-Windows-V32-2
+          path: release/*
