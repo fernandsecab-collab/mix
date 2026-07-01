@@ -1,0 +1,51 @@
+{
+  "name": "fm-remix-forge-studio",
+  "version": "32.2.0",
+  "description": "FM Remix Forge Studio V32.2 - base V32 avec workflow GitHub assaini sans lock interne",
+  "author": "FM",
+  "private": true,
+  "main": "dist-electron/main.js",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "electron:dev": "concurrently \"vite\" \"wait-on http://localhost:5173 && electron .\"",
+    "build": "node ./node_modules/typescript/bin/tsc -p tsconfig.json && node ./node_modules/vite/bin/vite.js build && node ./node_modules/typescript/bin/tsc -p electron/tsconfig.json",
+    "dist:win": "npm run build && node ./node_modules/electron-builder/cli.js --win portable --x64 --publish never",
+    "check": "node scripts/check-project.cjs",
+    "typecheck": "node ./node_modules/typescript/bin/tsc -p tsconfig.json && node ./node_modules/typescript/bin/tsc -p electron/tsconfig.json"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "4.3.3",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.9",
+    "@types/react": "18.3.12",
+    "@types/react-dom": "18.3.1",
+    "concurrently": "9.1.0",
+    "electron": "31.7.7",
+    "electron-builder": "24.13.3",
+    "typescript": "5.6.3",
+    "vite": "5.4.11",
+    "wait-on": "8.0.1"
+  },
+  "build": {
+    "appId": "com.fm.remixforge",
+    "productName": "FM Remix Forge Studio",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**",
+      "dist-electron/**",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ],
+      "artifactName": "FM-Remix-Forge-Studio-V32-2-${version}.${ext}"
+    }
+  }
+}
